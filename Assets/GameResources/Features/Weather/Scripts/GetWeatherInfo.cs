@@ -2,6 +2,7 @@ namespace RequestTask.Feature.Weather
 {
     using Newtonsoft.Json;
     using RequestTask.Feature.ClientServer;
+    using System;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.Networking;
@@ -34,8 +35,8 @@ namespace RequestTask.Feature.Weather
         {
             if (!_requestAlreadyBeen)
             {
-                string requestURL = string.Format(_releaseServer.GetWeatherURLFormat, lat, lon, _apiKey);
-                _releaseServer.SendGetRequest(requestURL, new DownloadHandlerBuffer(), new Dictionary<string, string>() { { CONTENT_TYPE, CONTENT_TYPE_VALUE } });
+                string requestURL = string.Format(_releaseServer.GetWeatherURParametersFormat, lat, lon, _apiKey);
+                _releaseServer.SendGetRequest(requestURL, _releaseServer.GetWeatherURL, new DownloadHandlerBuffer(), new Dictionary<string, string>() { { CONTENT_TYPE, CONTENT_TYPE_VALUE } });
                 _requestAlreadyBeen = true;
             }
         }
@@ -46,6 +47,20 @@ namespace RequestTask.Feature.Weather
             string responseStr = ((DownloadHandlerBuffer)_releaseServer.DownloadHandler).text;
             ResponseData temp = JsonConvert.DeserializeObject<ResponseData>(responseStr);
             Debug.Log(temp.main.temp);
+            _requestAlreadyBeen = false;
+        }
+
+        protected override void OnServerErrorRequest()
+        {
+            base.OnServerErrorRequest();
+            Debug.Log("Произошла ошибка при выполнении запроса: " + _serverInstanceContainer.Server.RequestError + Environment.NewLine + "Код ошибки: " + _serverInstanceContainer.Server.ErrorCode);
+            _requestAlreadyBeen = false;
+        }
+
+        protected override void OnServerStopRequest()
+        {
+            base.OnServerStopRequest();
+            Debug.Log("Запрос был прерван.");
             _requestAlreadyBeen = false;
         }
     }    
