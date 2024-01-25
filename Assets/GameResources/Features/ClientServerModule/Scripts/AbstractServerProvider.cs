@@ -16,15 +16,27 @@ namespace RequestTask.Feature.ClientServer
         {
             if (_serverInstanceContainer.Server != null)
             {
-                OnServerInitialized();
+                OnServerInitSuccess();
             }
             else
             {
-                _serverInstanceContainer.OnServerInitialized += OnServerInitialized;
+                _serverInstanceContainer.OnServerInitialized += OnServerInitSuccess;
             }
+            _serverInstanceContainer.OnServerChanged += OnServerChanged;
         }
 
-        protected abstract void OnServerInitialized();
+        protected virtual void OnServerInitSuccess()
+        {
+            _serverInstanceContainer.OnServerInitialized -= OnServerInitSuccess;
+            _serverInstanceContainer.OnServerChanged += OnServerChanged;
+            SubscribeOnStartRequest();
+        }
+
+        protected virtual void OnServerChanged() =>
+            SubscribeOnStartRequest();
+
+        protected void SubscribeOnStartRequest() =>
+            _server.OnServerStartRequest += OnServerStartRequest;
 
         protected virtual void OnServerStartRequest()
         {
@@ -53,7 +65,8 @@ namespace RequestTask.Feature.ClientServer
         {
             if(_serverInstanceContainer != null)
             {
-                _serverInstanceContainer.OnServerInitialized -= OnServerInitialized;
+                _serverInstanceContainer.OnServerInitialized -= OnServerInitSuccess;
+                _serverInstanceContainer.OnServerChanged -= OnServerChanged;
             }
             if (_server != null)
             {

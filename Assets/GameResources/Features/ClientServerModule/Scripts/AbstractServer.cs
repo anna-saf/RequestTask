@@ -73,6 +73,14 @@ namespace RequestTask.Feature.ClientServer
         public virtual void StopRequest() =>
             OnServerStopRequest();
 
+        public virtual void UnsubscribeAllActions()
+        {
+            OnServerStartRequest = delegate { };
+            OnServerSuccessCompleteRequest = delegate { };
+            OnServerErrorRequest = delegate { };
+            OnServerStopRequest= delegate { };
+        }
+
         protected virtual void OnDispose() =>
             OnServerStopRequest();
 

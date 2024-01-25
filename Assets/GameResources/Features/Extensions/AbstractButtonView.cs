@@ -17,6 +17,9 @@ namespace UnityDev.Extensions
             _button.onClick.AddListener(OnButtonClicked);
         }
 
+        /// <summary>
+        /// Метод клика на комнату
+        /// </summary>
         protected abstract void OnButtonClicked();
 
         protected virtual void OnDestroy() =>
