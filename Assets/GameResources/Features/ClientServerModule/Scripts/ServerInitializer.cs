@@ -1,7 +1,6 @@
 namespace RequestTask.Feature.ClientServer
 {
-    using System.Collections;
-    using System.Collections.Generic;
+    using System;
     using UnityEngine;
 
     /// <summary>
@@ -9,13 +8,27 @@ namespace RequestTask.Feature.ClientServer
     /// </summary>
     public sealed class ServerInitializer : MonoBehaviour
     {
+        public event Action OnBindServer = delegate { };
         [SerializeField]
         private ServerInstanceContainer _serverInstanceContainer = default;
         [SerializeField]
-        private BaseServer _server = default;
+        private AbstractServer _server = default;
 
-        private void Awake() =>
-            _serverInstanceContainer.BindServer(_server);
+        private void Start()
+        {
+            if (_server != null)
+            {
+                if (_serverInstanceContainer.Server != null && _serverInstanceContainer.Server == _server)
+                {
+                    _server.Init();
+                }
+                else
+                {
+                    _serverInstanceContainer.BindServer(_server);
+                    OnBindServer();
+                }
+            }
+        }
     }
 }
 

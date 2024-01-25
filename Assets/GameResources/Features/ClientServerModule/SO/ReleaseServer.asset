@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 935364343584b7a4eb737612fa96a135, type: 3}
   m_Name: ReleaseServer
   m_EditorClassIdentifier: 
-  _serverURL: https://api.openweathermap.org/data/2.5
-  _getWeatherURLFormat: /weather?lat={0}&lon={1}&appid={2}
+  _testURL: https://api.openweathermap.org/data/2.5
+  _prodURL: ProdURL
+  _isTest: 1
+  _getWeatherURL: /weather
+  _getWeatherURParametersFormat: ?lat={0}&lon={1}&appid={2}

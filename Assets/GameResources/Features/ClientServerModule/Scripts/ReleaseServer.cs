@@ -10,37 +10,36 @@ namespace RequestTask.Feature.ClientServer
     /// Класс релизного сервера
     /// </summary>
     [CreateAssetMenu(fileName = nameof(ReleaseServer), menuName = "RequestTask/ClientServer/" + nameof(ReleaseServer))]
-    public sealed class ReleaseServer : BaseServer
+    public sealed class ReleaseServer : AbstractServer
     {
         [SerializeField]
-        private string _serverURL = default;
+        private string _testURL = default;
         [SerializeField]
-        private string _getWeatherURLFormat = default;
+        private string _prodURL = default;
+        [SerializeField]
+        private bool _isTest = default;
+
+        [SerializeField]
+        private string _getWeatherURL = default;
         /// <summary>
         /// Получение апи запроса для получения погоды
         /// </summary>
-        public string GetWeatherURLFormat => _getWeatherURLFormat;
-
-        private DownloadHandler _downloadHandler = default;
+        public string GetWeatherURL => _getWeatherURL;
+        [SerializeField]
+        private string _getWeatherURParametersFormat = default;
         /// <summary>
-        ///Получение _downloadHandler
+        /// Получение формата строки с параметрами в url
         /// </summary>
-        public DownloadHandler DownloadHandler => _downloadHandler;
+        public string GetWeatherURParametersFormat => _getWeatherURParametersFormat;
 
-        private string _requestError = default;
-        /// <summary>
-        ///Получение _requestError
-        /// </summary>
-        public string RequestError => _requestError;
-
-        private long _errorCode = default;
-        /// <summary>
-        /// Получение _errorCode
-        /// </summary>
-        public long ErrorCode => _errorCode;    
+        private string _targetURL = default;
+ 
 
         private CancellationTokenSource _cancellationTokenSource = default;
         private CancellationToken _cancellationToken = default;
+
+        public override void Init() =>
+            _targetURL = _isTest? _testURL : _prodURL;
 
         /// <summary>
         /// Метод отправки Get запроса на сервер
@@ -48,12 +47,13 @@ namespace RequestTask.Feature.ClientServer
         /// <param name="getRequestUrl"></param>
         /// <param name="downloadHandler"></param>
         /// <param name="headers"></param>
-        public async void SendGetRequest(string getRequestUrl, DownloadHandler downloadHandler, Dictionary<string,string> headers)
+        public override async void SendGetRequest(string urlParameters, string getRequestUrl, DownloadHandler downloadHandler, Dictionary<string,string> headers)
         {
+            _targetURL = _testURL;
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
 
-            using (UnityWebRequest request = UnityWebRequest.Get(_serverURL + getRequestUrl))
+            using (UnityWebRequest request = UnityWebRequest.Get(_targetURL + getRequestUrl + urlParameters))
             {
                 foreach(KeyValuePair<string,string> header in headers)
                 {

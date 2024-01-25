@@ -1,15 +1,16 @@
 namespace RequestTask.Feature.ClientServer
 {
-    using System.Collections;
-    using System.Collections.Generic;
     using UnityEngine;
 
+    /// <summary>
+    /// Абстрактный провайдер сервера
+    /// </summary>
     public abstract class AbstractServerProvider : MonoBehaviour
     {
         [SerializeField, Space()]
         protected ServerInstanceContainer _serverInstanceContainer = default;
 
-        protected BaseServer _server = default;
+        protected AbstractServer _server = default;
 
         protected virtual void Awake()
         {

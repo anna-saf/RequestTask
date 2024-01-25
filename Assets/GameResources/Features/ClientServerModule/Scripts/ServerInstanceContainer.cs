@@ -12,22 +12,28 @@ namespace RequestTask.Feature.ClientServer
     public sealed class ServerInstanceContainer : ScriptableObject
     {
         public event Action OnServerInitialized = delegate { };
+        public event Action OnServerChanged = delegate { };
 
-        private BaseServer _server = default;
+        private AbstractServer _server = default;
         /// <summary>
         /// Получение сервера
         /// </summary>
-        public BaseServer Server => _server;
+        public AbstractServer Server => _server;
 
         private void Awake() =>
             hideFlags = HideFlags.DontUnloadUnusedAsset;
 
-        public void BindServer(BaseServer server)
+        public void BindServer(AbstractServer server)
         {
-            if (!(_server != null && _server == server))
+            if (_server == null)
             {
                 _server = server;
                 OnServerInitialized();
+            }
+            else if (_server != server)
+            {
+                _server = server;
+                OnServerChanged();
             }
         }
     }
