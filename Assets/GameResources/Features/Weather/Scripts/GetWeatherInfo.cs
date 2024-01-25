@@ -21,7 +21,7 @@ namespace RequestTask.Feature.Weather
 
         private ReleaseServer _releaseServer = default;
 
-        protected override void OnServerInitialized()
+        protected override void OnServerInitSuccess()
         {
             if (_serverInstanceContainer.Server.GetType() == typeof(ReleaseServer))
             {
@@ -31,6 +31,11 @@ namespace RequestTask.Feature.Weather
             }
         }
 
+        /// <summary>
+        /// Запросить информацию о погоде
+        /// </summary>
+        /// <param name="lat"></param>
+        /// <param name="lon"></param>
         public void GetWeather(float lat, float lon)
         {
             if (!_requestAlreadyBeen)
@@ -44,24 +49,24 @@ namespace RequestTask.Feature.Weather
         protected override void OnServerSuccessCompleteRequest()
         {
             base.OnServerSuccessCompleteRequest();
+            _requestAlreadyBeen = false;
             string responseStr = ((DownloadHandlerBuffer)_releaseServer.DownloadHandler).text;
             ResponseData temp = JsonConvert.DeserializeObject<ResponseData>(responseStr);
             Debug.Log(temp.main.temp);
-            _requestAlreadyBeen = false;
         }
 
         protected override void OnServerErrorRequest()
         {
             base.OnServerErrorRequest();
-            Debug.Log("Произошла ошибка при выполнении запроса: " + _serverInstanceContainer.Server.RequestError + Environment.NewLine + "Код ошибки: " + _serverInstanceContainer.Server.ErrorCode);
             _requestAlreadyBeen = false;
+            Debug.Log("Произошла ошибка при выполнении запроса: " + _serverInstanceContainer.Server.RequestError + Environment.NewLine + "Код ошибки: " + _serverInstanceContainer.Server.ErrorCode);
         }
 
         protected override void OnServerStopRequest()
         {
             base.OnServerStopRequest();
-            Debug.Log("Запрос был прерван.");
             _requestAlreadyBeen = false;
+            Debug.Log("Запрос был прерван.");
         }
     }    
 }

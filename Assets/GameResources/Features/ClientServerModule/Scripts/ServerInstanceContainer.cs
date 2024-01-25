@@ -1,8 +1,6 @@
 namespace RequestTask.Feature.ClientServer
 {
     using System;
-    using System.Runtime.InteropServices.WindowsRuntime;
-    using Unity.VisualScripting;
     using UnityEngine;
 
     /// <summary>
@@ -23,16 +21,23 @@ namespace RequestTask.Feature.ClientServer
         private void Awake() =>
             hideFlags = HideFlags.DontUnloadUnusedAsset;
 
+        /// <summary>
+        /// Метод биндинга сервера
+        /// </summary>
+        /// <param name="server"></param>
         public void BindServer(AbstractServer server)
         {
             if (_server == null)
             {
                 _server = server;
+                _server.Init();
                 OnServerInitialized();
             }
             else if (_server != server)
             {
+                _server.UnsubscribeAllActions();
                 _server = server;
+                _server.Init();
                 OnServerChanged();
             }
         }
